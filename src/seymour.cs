@@ -548,9 +548,9 @@ public unsafe class SeymourModule : FhModule
             && _MsParseCommand                  .hook(this, h_MsParseCommand)
             && _TOBtlCtrlHelpWin                .hook(this, h_TOBtlCtrlHelpWin)
             && _TOGetSaveWindow                 .hook(this, h_TOGetSaveWindow)
-            && _TkMenuSummonEnableMask          .hook(this, h_TkMenuSummonEnableMask)
-            && _MsSetSaveParam                  .hook(this, h_MsSetSaveParam)
-            && _MsGetChrAbilityMap              .hook(this, h_MsGetChrAbilityMap)
+            //&& _TkMenuSummonEnableMask          .hook(this, h_TkMenuSummonEnableMask)
+            //&& _MsSetSaveParam                  .hook(this, h_MsSetSaveParam)
+            //&& _MsGetChrAbilityMap              .hook(this, h_MsGetChrAbilityMap)
             && _MsBtlReadManage                 .hook(this, h_MsBtlReadManage);
     }
     public override void load_local_state(FileStream? local_state_file, FhLocalStateInfo local_state_info) { }
@@ -2826,27 +2826,6 @@ public unsafe class SeymourModule : FhModule
         {
             ushort* originallist = _TOGetSaveWindow.chain_from(h_TOGetSaveWindow).fnptr!(chr_id, window_type, out_length);
             Span<ushort> listSpan = new(originallist, *out_length);
-            if (chr_id == 1)
-            {
-                if (!Globals.save_data->has_anima && listSpan.Contains<ushort>(PlySaveId.PC_ANIMA))
-                {
-                    int newLength = 0;
-                    for (int i = 0; i < *out_length; i++)
-                    {
-                        if (listSpan[i] != PlySaveId.PC_ANIMA)
-                        {
-                            listSpan[newLength] = listSpan[i];
-                            newLength++;
-                        }
-                    }
-                    for (int i = newLength; i < *out_length; i++)
-                    {
-                        listSpan[i] = 0xFFFF;
-                    }
-                    *out_length = newLength;
-                }
-                return originallist;
-            }
             if (chr_id == 7)
             {
                 if (listSpan.Contains<ushort>(PlySaveId.PC_ANIMA))
